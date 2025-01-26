@@ -22,7 +22,7 @@ function Layout(props) {
         <span className="text-gradient">Caffiend</span> was made by{" "}
         <a href="#" target="_blank">
         Lefcho
-        </a>{" "}
+        </a>{" "}<br/>
         using the{" "}
         <a href="https://www.fantacss.smoljames.com" target="_blank">
           FantaCSS
