@@ -1,7 +1,10 @@
-import React from "react";
+import Modal from "./Modal";
+import Authentication from "./Authentication";
+import { useState } from "react";
 
 function Layout(props) {
   const { children } = props;
+  const {showModal, setShowModal} = useState(false);
 
   const header = (
     <header>
@@ -33,6 +36,9 @@ function Layout(props) {
 
   return (
     <>
+      <Modal>
+        <Authentication />
+      </Modal>
       {header}
       <main>{children}</main>
       {footer}
