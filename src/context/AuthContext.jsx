@@ -1,7 +1,8 @@
 
 import { createUserWithEmailAndPassword, onAuthStateChanged, sendPasswordResetEmail, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { useState, useEffect, useContext, createContext } from "react";
-import { auth } from "../../firebase";
+import { auth, db } from "../../firebase";
+import { doc, getDoc } from "firebase/firestore";
 
 const AuthContext = createContext()
 
@@ -35,6 +36,33 @@ export function AuthProvider(props) {
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
+
+            if (!user) {
+                console.log('No active user.');
+                return;
+            }
+
+            try {
+                setIsLoading(true);
+
+                // create a ref for the documnet (labeled JSON obj)
+                const docRef = doc(db, 'users', user.uid);
+                // snapshot the doc to see if there is anything there
+                const docSnap = await getDoc(docRef);
+
+                let firebaseData = {}
+                if (docSnap.exists()) {
+                    console.log('Found user data');
+                    firebaseData = docSnap.data();
+                }
+                
+                setGlobalData(firebaseData);
+            } catch(err) {
+                console.log(err.message);
+                
+            } finally {
+                setIsLoading(false);
+            }
             
         });
         return unsubscribe;
