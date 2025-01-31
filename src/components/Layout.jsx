@@ -1,10 +1,18 @@
 import Modal from "./Modal";
 import Authentication from "./Authentication";
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
 
 function Layout(props) {
   const { children } = props;
+
   const [showModal, setShowModal] = useState(false);
+
+  const { globalUser, logout } = useAuth();
+
+  function handleLogout() {
+    
+  }
 
   const header = (
     <header>
@@ -12,10 +20,16 @@ function Layout(props) {
         <h1 className="text-gradient">CAFFIEND</h1>
         <p>For Coffee Insatiates</p>
       </div>
-      <button onClick={() => {setShowModal(true)}}>
+      {globalUser ? 
+      (<button onClick={() => {setShowModal(true)}}>
         <p>Sign up free</p>
         <i className="fa-solid fa-mug-hot"></i>
-      </button>
+      </button>) 
+      : 
+      (<button onClick={handleLogout}>
+        <p>Log out</p>
+        <i class="fa-solid fa-right-from-bracket"></i>
+      </button>) }
     </header>
   );
 
@@ -37,7 +51,7 @@ function Layout(props) {
   return (
     <>
       {showModal && (<Modal handleCloseModal={() => setShowModal(false)}>
-        <Authentication />
+        <Authentication handleCloseModal={() => setShowModal(false)}/>
       </Modal>)}
       {header}
       <main>{children}</main>
