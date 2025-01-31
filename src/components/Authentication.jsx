@@ -34,7 +34,8 @@ function Authentication(props) {
 
         try {
             setIsAuthenticating(true);
-
+            setErrorMessage(null);
+            
             if (isRegistration) {
                 // register a user
                 await signup(email, password);

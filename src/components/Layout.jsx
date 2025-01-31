@@ -10,8 +10,8 @@ function Layout(props) {
 
   const { globalUser, logout } = useAuth();
 
-  function handleLogout() {
-    
+  function handleCloseModal() {
+    setShowModal(false);
   }
 
   const header = (
@@ -21,15 +21,16 @@ function Layout(props) {
         <p>For Coffee Insatiates</p>
       </div>
       {globalUser ? 
+      (<button onClick={logout}>
+        <p>Log out</p>
+        <i className="fa-solid fa-right-from-bracket"></i>
+      </button>)
+      : 
       (<button onClick={() => {setShowModal(true)}}>
         <p>Sign up free</p>
         <i className="fa-solid fa-mug-hot"></i>
-      </button>) 
-      : 
-      (<button onClick={handleLogout}>
-        <p>Log out</p>
-        <i class="fa-solid fa-right-from-bracket"></i>
-      </button>) }
+      </button>)}
+
     </header>
   );
 
@@ -50,8 +51,8 @@ function Layout(props) {
 
   return (
     <>
-      {showModal && (<Modal handleCloseModal={() => setShowModal(false)}>
-        <Authentication handleCloseModal={() => setShowModal(false)}/>
+      {showModal && (<Modal handleCloseModal={handleCloseModal}>
+        <Authentication handleCloseModal={handleCloseModal}/>
       </Modal>)}
       {header}
       <main>{children}</main>

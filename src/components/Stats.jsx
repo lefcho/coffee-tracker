@@ -1,5 +1,6 @@
 import React from "react";
 import { calculateCoffeeStats, calculateCurrentCaffeineLevel, coffeeConsumptionHistory, getTopThreeCoffees, statusLevels } from "../utils";
+import { useAuth } from "../context/AuthContext";
 
 function StatCard(props) {
     const { isLg, title, children } = props
@@ -13,9 +14,10 @@ function StatCard(props) {
 }
 
 function Stats() {
-    const stats = calculateCoffeeStats(coffeeConsumptionHistory);
+    const { globalData } = useAuth();
+    const stats = calculateCoffeeStats(globalData);
 
-    const caffeine_level = calculateCurrentCaffeineLevel(coffeeConsumptionHistory);
+    const caffeine_level = calculateCurrentCaffeineLevel(globalData);
     const warningLevel = caffeine_level < statusLevels['low'].maxLevel ? 
         'low' : 
         caffeine_level < statusLevels['moderate'].maxLevel ?
@@ -60,7 +62,7 @@ function Stats() {
                     </tr>
                 </thead>
                 <tbody>
-                    {getTopThreeCoffees(coffeeConsumptionHistory)
+                    {getTopThreeCoffees(globalData)
                     .map((coffee, coffeeIndex) => {
                         return (<tr key={coffeeIndex}>
                             <td>{coffee.coffeeName}</td>

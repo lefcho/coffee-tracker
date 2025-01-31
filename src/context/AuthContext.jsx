@@ -30,15 +30,16 @@ export function AuthProvider(props) {
 
     function logout() {
         setGlobalUser(null);
+
         setGlobalData(null);
         return signOut(auth);
     }
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, async (user) => {
+            setGlobalUser(user);
 
             console.log('Current user: ', user);
-            
 
             if (!user) {
                 console.log('No active user.');

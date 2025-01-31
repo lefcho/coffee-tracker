@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { coffeeOptions, hoursSelection, minsSelection } from "../utils";
 import Modal from "./Modal";
 import Authentication from "./Authentication";
+import { useAuth } from "../context/AuthContext";
+import { doc, setDoc } from "firebase/firestore";
+import { db } from "../../firebase";
 
 function CoffeeForm(props) {
     const { isAuthenticated } = props;
@@ -13,19 +16,65 @@ function CoffeeForm(props) {
     const [hour, setHour] = useState(0);
     const [min, setMin] = useState(0);
 
-    function handleSubmitForm() {
+    const { globalData, setGlobalData, globalUser } = useAuth();
+
+    async function handleSubmitForm() {
         if (!isAuthenticated) {
             setShowModal(true);
             return;
         }
-        console.log(selectedCoffee, coffeeCost, hour, min);
+
+        if (!selectedCoffee) {
+            return;
+        }
+
+        try {
+
+            const newGlobalData = {
+                ...(globalData || {})
+            }
+
+            const nowTime = Date.now();
+            const timeToSubtract = (hour * 60 * 60 * 1000) + (min * 60 * 1000);
+            const timestamp = nowTime - timeToSubtract;
+
+            const newData = {
+                name: selectedCoffee,
+                cost: coffeeCost,
+            }
+
+            newGlobalData[timestamp] = newData;
+
+            setGlobalData(newGlobalData);
+
+            console.log(timestamp, selectedCoffee, coffeeCost);
+
+            const userRef = doc(db, 'users', globalUser.uid);
+            const response = await setDoc(userRef, {
+                [timestamp]: newData
+            }, { merge: true });
+
+            setSelectedCoffee(null);
+            setHour(0);
+            setMin(0);
+            setCoffeeCost(0);
+
+        } catch (err) {
+            console.log(err.message);
+        }
 
     }
 
+
+    function handleCloseModal() {
+        setShowModal(false);
+    }
+
+
     return (
         <>
-            {showModal && (<Modal handleCloseModal={() => setShowModal(false)}>
-                <Authentication handleCloseModal={() => setShowModal(false)}/>
+            {showModal && (<Modal handleCloseModal={handleCloseModal}>
+                <Authentication handleCloseModal={handleCloseModal} />
             </Modal>)}
             <div className="section-header">
                 <i className="fa-solid fa-pencil"></i>
